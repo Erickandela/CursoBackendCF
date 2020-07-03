@@ -1,0 +1,8 @@
+doctype html
+html
+  head
+    title Hola Hola
+  body
+    form(action=`/tasks/${task.id}?_method=PUT` method="POST")
+      textarea(name="description" placeholder="Coloca Aqui algo")= task.description
+      input(type="submit" value="guardar")
