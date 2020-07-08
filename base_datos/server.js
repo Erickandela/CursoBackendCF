@@ -5,6 +5,7 @@ const Sequelize = require('sequelize');
 const methodOverride = require('method-override');
 const session = require('express-session');
 
+
 const socketio = require('socket.io');
 
 
@@ -67,6 +68,11 @@ io.on('connection', function (socket) {
   io.emit('count_updated', {
     count: userCount
   });
+  socket.on('new_task', function (data) {
+    console.log(data);
+    io.emit('new_task',data);
+  })
+
 
   socket.on('disconnect', function () {
     userCount --;
@@ -75,3 +81,5 @@ io.on('connection', function (socket) {
     });
   })
 });
+
+const client = require('./realtime/client');
