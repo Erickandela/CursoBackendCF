@@ -5,11 +5,15 @@ const Sequelize = require('sequelize');
 const methodOverride = require('method-override');
 const session = require('express-session');
 
+const socketio = require('socket.io');
+
+
 const app = express();
 
 const tasksRoutes = require('./routes/tasks_routes');
 const registrationRoutes = require('./routes/registration_routes');
 const sessionsRoutes = require('./routes/sessions_routes');
+const categoriesRoutes = require('./routes/categories_routes');
 
 const findUserMiddleware = require('./middlewares/find_user');
 const authUser = require('./middlewares/auth_user');
@@ -38,6 +42,7 @@ app.use(authUser);
 app.use(tasksRoutes);
 app.use(registrationRoutes);
 app.use(sessionsRoutes);
+app.use(categoriesRoutes);
 
 app.get('/', function (req, res) {
   res.render('home', {
@@ -52,4 +57,21 @@ app.get('/', function (req, res) {
 //   res.send('Inserción finalizada');
 // });
 
-app.listen(3000);
+let server = app.listen(3000);
+let io = socketio(server);
+
+let userCount = 0;
+
+io.on('connection', function (socket) {
+  userCount ++ ;
+  io.emit('count_updated', {
+    count: userCount
+  });
+
+  socket.on('disconnect', function () {
+    userCount --;
+    io.emit('count_updated', {
+      count: userCount
+    });
+  })
+});
