@@ -11,7 +11,7 @@ html
       input(type="submit" value="Cerrar Sesión")
     script(src="/socket.io/socket.io.js")
     script.
-      socket = io.connect()
+      socket = io.connect(window.location.origin,{query:'loggeduser=#{user.id}'})
       
       socket.on('count_updated', function (data) {
         console.log(data);
