@@ -29,11 +29,17 @@ app.use(methodOverride('_method'));
 // let db = new sqlite3.Database('proyecto-backend');
 app.set('view engine','pug');
 
-app.use(session({
+let sessionConfig = {
   secret: ['12asdfgf', '1324rtgved3243'],
   saveUninitialized: false,
   resave: false
-}));
+}
+
+if (process.env.NODE_ENV && process.env.NODE_ENV == 'production') {
+  sessionConfig['store'] = new (require('connect-pg-simple')(session))();
+}
+
+app.use(session(sessionConfig));
 
 app.use(findUserMiddleware);
 app.use(authUser);
@@ -55,7 +61,7 @@ app.get('/', function (req, res) {
 //   res.send('Inserción finalizada');
 // });
 
-let server = app.listen(3000);
+let server = app.listen(process.env.PORT || 3000);
 let io = socketio(server);
 let sockets = {};
 
